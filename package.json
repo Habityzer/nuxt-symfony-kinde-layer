@@ -8,7 +8,8 @@
     "dev": "nuxi dev --dotenv .env.example",
     "build": "nuxt build",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "release": " HUSKY=0 semantic-release"
   },
   "keywords": [
     "nuxt",
@@ -31,6 +32,13 @@
     "vue-router": "^4.6.0"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "commitlint": "^19.8.1",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/release-notes-generator": "^14.1.0",
     "@habityzer/nuxt-openapi-composables": "^1.1.0",
     "@iconify-json/heroicons": "^1.2.3",
     "openapi-typescript": "^7.10.0",
