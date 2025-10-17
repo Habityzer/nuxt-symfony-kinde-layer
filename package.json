@@ -1,6 +1,6 @@
 {
   "name": "@habityzer/nuxt-symfony-kinde-layer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shared Nuxt layer for Symfony + Kinde authentication integration",
   "type": "module",
   "main": "./nuxt.config.ts",

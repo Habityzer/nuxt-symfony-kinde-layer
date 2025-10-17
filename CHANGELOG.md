@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v1.0.0...v1.0.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* Remove add @semantic-release/npm to package.json and pnpm-lock.yaml ([b167dfb](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/b167dfb7b0e59605bbc63a6bf5b2dae58ce8c2a4))
+
 # 1.0.0 (2025-10-17)
 
 
