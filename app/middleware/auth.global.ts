@@ -6,7 +6,7 @@ import { E2E_TOKEN_COOKIE_NAME, KINDE_ID_TOKEN_COOKIE_NAME, KINDE_ACCESS_TOKEN_C
  *
  * Note: This middleware works alongside the nuxt-kinde-auth module.
  * It handles E2E testing tokens and uses the module's login endpoints.
- * 
+ *
  * Projects should configure publicRoutes in their nuxt.config.ts:
  * kindeAuth: {
  *   middleware: {
@@ -37,10 +37,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const config = useRuntimeConfig()
     // @ts-expect-error - cookie property exists in runtime config but not in Kinde module types
     const cookiePrefix = config.public.kindeAuth?.cookie?.prefix || 'app_'
-    
+
     const idTokenName = `${cookiePrefix}${KINDE_ID_TOKEN_COOKIE_NAME}`
     const accessTokenName = `${cookiePrefix}${KINDE_ACCESS_TOKEN_COOKIE_NAME}`
-    
+
     const idToken = useCookie(idTokenName)
     const accessToken = useCookie(accessTokenName)
     const e2eToken = useCookie(E2E_TOKEN_COOKIE_NAME) // E2E test token
@@ -63,10 +63,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const config = useRuntimeConfig()
     // @ts-expect-error - cookie property exists in runtime config but not in Kinde module types
     const cookiePrefix = config.public.kindeAuth?.cookie?.prefix || 'app_'
-    
+
     const idTokenName = `${cookiePrefix}${KINDE_ID_TOKEN_COOKIE_NAME}`
     const accessTokenName = `${cookiePrefix}${KINDE_ACCESS_TOKEN_COOKIE_NAME}`
-    
+
     const idToken = useCookie(idTokenName)
     const accessToken = useCookie(accessTokenName)
 
@@ -80,4 +80,3 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 })
-

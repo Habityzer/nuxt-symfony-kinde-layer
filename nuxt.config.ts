@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/guide/going-further/layers
 export default defineNuxtConfig({
-  compatibilityDate: '2025-01-17',
 
   // Pre-configure shared modules that all projects will use
   modules: [
@@ -11,6 +10,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt'
   ],
 
+  devtools: { enabled: true },
+
   // Default runtime config (projects can override)
   runtimeConfig: {
     // Server-only (private) runtime config
@@ -20,7 +21,7 @@ export default defineNuxtConfig({
       // Public runtime config (exposed to client-side)
       apiBaseUrl: '',
       apiPrefix: '/api/symfony', // API endpoint prefix for useOpenApi
-      
+
       // Expose kindeAuth config for middleware (will be merged with project config)
       kindeAuth: {
         // @ts-expect-error - cookie property exists in runtime but not in Kinde module types
@@ -30,6 +31,17 @@ export default defineNuxtConfig({
         middleware: {
           publicRoutes: [] // Default, projects override this
         }
+      }
+    }
+  },
+  compatibilityDate: '2025-01-17',
+
+  // ESLint configuration
+  eslint: {
+    config: {
+      stylistic: {
+        commaDangle: 'never',
+        braceStyle: '1tbs'
       }
     }
   },
@@ -61,17 +73,5 @@ export default defineNuxtConfig({
   },
 
   // Pinia configuration
-  pinia: {},
-
-  // ESLint configuration
-  eslint: {
-    config: {
-      stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
-    }
-  },
-
-  devtools: { enabled: true }
+  pinia: {}
 })

@@ -19,4 +19,3 @@ declare module '@habityzer/nuxt-kinde-auth' {
 }
 
 export {}
-

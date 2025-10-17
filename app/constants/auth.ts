@@ -18,10 +18,9 @@ export const APP_TOKEN_PREFIX = 'app_'
  * Kinde authentication cookie names
  * These cookies are managed by the @habityzer/nuxt-kinde-auth module
  * The prefix is configured per-project in nuxt.config.ts
- * 
+ *
  * Note: These constants use placeholder names. The actual cookie names
  * will have the project-specific prefix (e.g., 'ew-id_token', 'habityzer_id_token')
  */
 export const KINDE_ID_TOKEN_COOKIE_NAME = 'id_token'
 export const KINDE_ACCESS_TOKEN_COOKIE_NAME = 'access_token'
-

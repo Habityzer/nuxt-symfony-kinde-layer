@@ -21,4 +21,3 @@ export const APP_TOKEN_PREFIX = 'app_'
  */
 export const KINDE_ID_TOKEN_COOKIE_NAME = 'id_token'
 export const KINDE_ACCESS_TOKEN_COOKIE_NAME = 'access_token'
-

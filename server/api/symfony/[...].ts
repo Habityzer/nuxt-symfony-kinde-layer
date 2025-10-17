@@ -1,14 +1,14 @@
 /**
  * Symfony API Proxy - Forwards requests to Symfony backend with authentication
- * 
+ *
  * Usage: /api/symfony/* -> proxies to Symfony backend
- * 
+ *
  * Features:
  * - Forwards Kinde authentication tokens
  * - Supports E2E testing with app tokens
  * - Properly forwards Accept and Content-Type headers for API negotiation
  * - Handles query parameters
- * 
+ *
  * @see .cursorrules for proxy best practices
  */
 
@@ -21,15 +21,11 @@ export default defineEventHandler(async (event) => {
 
   // Get the path (remove /api/symfony prefix)
   let path = event.context.params?.path || event.path.replace('/api/symfony', '')
-  
+
   // Ensure path starts with / (for catch-all routes it might not)
   if (!path.startsWith('/')) {
     path = `/${path}`
   }
-
-  console.log('🔍 [SYMFONY PROXY] Incoming path:', event.path)
-  console.log('🔍 [SYMFONY PROXY] Extracted path:', path)
-  console.log('🔍 [SYMFONY PROXY] API Base URL:', config.apiBaseUrl)
 
   let token: string | undefined
 
@@ -104,7 +100,7 @@ export default defineEventHandler(async (event) => {
     // Prepare headers for Symfony
     // IMPORTANT: Forward Content-Type and Accept headers for proper API negotiation
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`
     }
 
     // Forward Content-Type header
@@ -152,4 +148,3 @@ export default defineEventHandler(async (event) => {
     })
   }
 })
-
