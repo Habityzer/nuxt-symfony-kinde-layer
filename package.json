@@ -43,7 +43,8 @@
     "@iconify-json/heroicons": "^1.2.3",
     "openapi-typescript": "^7.10.0",
     "typescript": "^5.9.3",
-    "eslint": "^9.37.0"
+    "eslint": "^9.37.0",
+    "semantic-release": "^24.2.9"
   },
   "peerDependencies": {
     "nuxt": "^3.0.0 || ^4.0.0"
