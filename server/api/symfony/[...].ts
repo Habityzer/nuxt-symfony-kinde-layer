@@ -16,6 +16,7 @@
 const E2E_TOKEN_COOKIE_NAME = 'kinde_token'
 const APP_TOKEN_PREFIX = 'app_'
 const KINDE_ID_TOKEN_COOKIE_NAME = 'id_token'
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
 
@@ -100,7 +101,7 @@ export default defineEventHandler(async (event) => {
     // Prepare headers for Symfony
     // IMPORTANT: Forward Content-Type and Accept headers for proper API negotiation
     const headers: Record<string, string> = {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer kinde_${token}`
     }
 
     // Forward Content-Type header
@@ -116,6 +117,19 @@ export default defineEventHandler(async (event) => {
       headers['Accept'] = accept
     }
 
+    // Log the request to backend
+    const backendUrl = `${config.apiBaseUrl}${path}`
+    console.log('🔵 [SYMFONY PROXY] Request to backend:', {
+      url: backendUrl,
+      method,
+      headers: {
+        ...headers,
+        Authorization: `Bearer kinde_${token.substring(0, 10)}...` // Only log first 10 chars of token
+      },
+      query,
+      hasBody: !!body
+    })
+
     // Forward request to Symfony with Kinde token
     const response = await $fetch(path, {
       baseURL: config.apiBaseUrl as string,
@@ -123,6 +137,12 @@ export default defineEventHandler(async (event) => {
       headers,
       body,
       query
+    })
+
+    console.log('✅ [SYMFONY PROXY] Backend response received:', {
+      url: backendUrl,
+      method,
+      status: 'success'
     })
 
     return response
