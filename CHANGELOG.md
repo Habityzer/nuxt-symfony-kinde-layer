@@ -1,3 +1,23 @@
+# [2.0.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v1.0.1...v2.0.0) (2025-12-03)
+
+
+* feat!: Update Symfony proxy authorization header to require kinde_ prefix ([c9692d1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/c9692d173a90c389c466524532b0c81e28cbac83))
+
+
+### Bug Fixes
+
+* Configure semantic-release to properly handle breaking changes with feat! syntax ([380a862](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/380a862e6e7782e9346435501dc1f7d4662944cb))
+
+
+### Features
+
+* Enhance Symfony proxy with Kinde token logging and update authorization header format! ([134f078](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/134f0780a445a6893499833b675412b31d44867f))
+
+
+### BREAKING CHANGES
+
+* The Symfony backend now expects the authorization token to be prefixed with 'kinde_'. All API calls will now send 'Authorization: Bearer kinde_<token>' instead of 'Authorization: Bearer <token>'. This requires backend API to be updated to handle the new token format.
+
 ## [1.0.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v1.0.0...v1.0.1) (2025-10-17)
 
 
