@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.0...v2.1.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* Clean up and standardize code formatting in Symfony proxy ([1c061e8](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/1c061e87842682d16ab3fe14ace5cef3aa2585c4))
+
 # [2.1.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.0.0...v2.1.0) (2025-12-12)
 
 
