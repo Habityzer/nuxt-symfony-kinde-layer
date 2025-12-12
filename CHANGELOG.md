@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.0.0...v2.1.0) (2025-12-12)
+
+
+### Features
+
+* Implement public route handling in Symfony proxy to skip authentication ([1e52eff](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/1e52eff2c7ca7cbfb25e59fcde378e4bf9347c4d))
+
 # [2.0.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v1.0.1...v2.0.0) (2025-12-03)
 
 
