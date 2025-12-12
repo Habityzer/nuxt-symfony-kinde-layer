@@ -28,14 +28,30 @@ export default defineEventHandler(async (event) => {
     path = `/${path}`
   }
 
+  // Check if this is a public API route (no auth required)
+  const publicApiRoutes = config.public.kindeAuth?.middleware?.publicApiRoutes || []
+  const isPublicRoute = publicApiRoutes.some((route: string) => {
+    if (route.endsWith('/**')) {
+      const prefix = route.slice(0, -3)
+      return path.startsWith(prefix)
+    }
+    return path === route
+  })
+
   let token: string | undefined
 
-  // Check for E2E test token first (from cookie)
-  // Only use E2E token if it's a valid app token (starts with APP_TOKEN_PREFIX)
-  const e2eToken = getCookie(event, E2E_TOKEN_COOKIE_NAME)
-  if (e2eToken && e2eToken.startsWith(APP_TOKEN_PREFIX)) {
-    token = e2eToken
+  // Skip authentication for public routes
+  if (isPublicRoute) {
+    console.log('🔓 [SYMFONY PROXY] Public route, skipping auth:', path)
+    // Set token to empty to skip auth headers
+    token = ''
   } else {
+    // Check for E2E test token first (from cookie)
+    // Only use E2E token if it's a valid app token (starts with APP_TOKEN_PREFIX)
+    const e2eToken = getCookie(event, E2E_TOKEN_COOKIE_NAME)
+    if (e2eToken && e2eToken.startsWith(APP_TOKEN_PREFIX)) {
+      token = e2eToken
+    } else {
     // Use Kinde authentication from the module
     const kinde = event.context.kinde
 
@@ -83,7 +99,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  if (!token) {
+  if (!token && !isPublicRoute) {
     throw createError({
       statusCode: 401,
       statusMessage: 'No authentication token available'
@@ -100,8 +116,11 @@ export default defineEventHandler(async (event) => {
 
     // Prepare headers for Symfony
     // IMPORTANT: Forward Content-Type and Accept headers for proper API negotiation
-    const headers: Record<string, string> = {
-      Authorization: `Bearer kinde_${token}`
+    const headers: Record<string, string> = {}
+    
+    // Only add Authorization header if we have a token (not public route)
+    if (token && token !== '') {
+      headers.Authorization = `Bearer kinde_${token}`
     }
 
     // Forward Content-Type header
