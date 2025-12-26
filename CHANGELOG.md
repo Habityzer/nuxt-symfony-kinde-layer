@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.1...v2.1.2) (2025-12-26)
+
+
+### Bug Fixes
+
+* Disable automatic retries in Symfony proxy request handling ([db4bb86](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/db4bb86bb993f203f64ae0cee5f6b5987e87bfec))
+
 ## [2.1.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.0...v2.1.1) (2025-12-12)
 
 
