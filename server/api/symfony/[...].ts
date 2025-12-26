@@ -163,6 +163,7 @@ export default defineEventHandler(async (event) => {
       method,
       headers,
       body,
+      retry: false, // Disable automatic retries
       query,
     });
 
