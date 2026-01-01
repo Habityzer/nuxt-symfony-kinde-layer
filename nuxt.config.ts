@@ -48,11 +48,11 @@ export default defineNuxtConfig({
 
   // Default Kinde configuration (projects MUST override with their credentials)
   kindeAuth: {
-    authDomain: '', // Project must provide
-    clientId: '', // Project must provide
-    clientSecret: '', // Project must provide
-    redirectURL: '', // Project must provide
-    logoutRedirectURL: '', // Project must provide
+    authDomain: process.env.KINDE_AUTH_DOMAIN || 'https://dummy.kinde.com', // Project must provide, dummy for build
+    clientId: process.env.KINDE_CLIENT_ID || 'dummy-client-id', // Project must provide, dummy for build
+    clientSecret: process.env.KINDE_CLIENT_SECRET || 'dummy-secret', // Project must provide, dummy for build
+    redirectURL: process.env.KINDE_REDIRECT_URL || 'http://localhost:3000/api/auth/kinde_callback', // Project must provide, dummy for build
+    logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL || 'http://localhost:3000', // Project must provide, dummy for build
     postLoginRedirectURL: '/dashboard', // Default, can be overridden
     cookie: {
       prefix: 'app_', // Projects MUST override this

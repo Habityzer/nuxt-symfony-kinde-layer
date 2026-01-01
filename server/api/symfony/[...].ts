@@ -114,10 +114,23 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // Get request method and body
+    // Get request method
     const method = event.method;
-    const body =
-      method !== "GET" && method !== "HEAD" ? await readBody(event) : undefined;
+    
+    // Get Content-Type to determine how to handle body
+    const contentType = getHeader(event, "content-type") || "";
+    
+    let body: any;
+    
+    // Handle multipart/form-data specially (preserve binary data and MIME types)
+    if (contentType.includes("multipart/form-data")) {
+      // For multipart/form-data, read the raw body without parsing
+      // This preserves the boundary and binary data including MIME types
+      body = await readRawBody(event, false);
+    } else if (method !== "GET" && method !== "HEAD") {
+      // For other content types (JSON, etc.), read and parse the body
+      body = await readBody(event);
+    }
 
     // Get query parameters from original request
     const query = getQuery(event);
@@ -131,8 +144,7 @@ export default defineEventHandler(async (event) => {
       headers.Authorization = `Bearer kinde_${token}`;
     }
 
-    // Forward Content-Type header
-    const contentType = getHeader(event, "content-type");
+    // Forward Content-Type header (CRITICAL for multipart/form-data with boundary)
     if (contentType) {
       headers["Content-Type"] = contentType;
     }
@@ -151,10 +163,11 @@ export default defineEventHandler(async (event) => {
       method,
       headers: {
         ...headers,
-        Authorization: `Bearer kinde_${token.substring(0, 10)}...`, // Only log first 10 chars of token
+        Authorization: token && token !== "" ? `Bearer kinde_${token.substring(0, 10)}...` : 'none',
       },
       query,
       hasBody: !!body,
+      isMultipart: contentType.includes("multipart/form-data"),
     });
 
     // Forward request to Symfony with Kinde token
@@ -163,8 +176,9 @@ export default defineEventHandler(async (event) => {
       method,
       headers,
       body,
-      retry: false, // Disable automatic retries
       query,
+      retry: false, // Disable automatic retries
+      timeout: 30000 // 30 second timeout
     });
 
     console.log("✅ [SYMFONY PROXY] Backend response received:", {
