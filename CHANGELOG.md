@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.2...v2.1.3) (2026-01-01)
+
+
+### Bug Fixes
+
+* Update Kinde configuration to use environment variables and enhance Symfony proxy request handling ([3e0d0bd](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/3e0d0bd09ea26a21940f0a0d16cc9aaf5a327be8))
+
 ## [2.1.2](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.1...v2.1.2) (2025-12-26)
 
 
