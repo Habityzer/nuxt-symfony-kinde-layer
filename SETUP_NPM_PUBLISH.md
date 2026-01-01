@@ -6,11 +6,26 @@ This project uses GitHub Actions with semantic-release to automatically publish 
 
 ### 1. Create NPM Access Token
 
-1. Go to [npmjs.com](https://www.npmjs.com/) and log in
-2. Click on your profile picture → **Access Tokens**
-3. Click **Generate New Token** → **Classic Token**
-4. Select **Automation** type (recommended for CI/CD)
-5. Copy the token (it starts with `npm_...`)
+> **Important**: As of December 9, 2025, npm classic tokens have been permanently revoked. You must use **granular access tokens** for CI/CD workflows.
+
+**Option A: Using npm CLI (recommended):**
+```bash
+npm token create --type automation --scope @habityzer
+```
+
+**Option B: Using the web interface:**
+1. Go to [npmjs.com/settings/~/tokens](https://www.npmjs.com/settings/~/tokens) and log in
+2. Click **Generate New Token** → **Granular Access Token**
+3. Configure your token:
+   - **Token name**: `github-actions-publish` (or any descriptive name)
+   - **Expiration**: Up to 90 days (maximum for publish tokens)
+   - **Packages and scopes**: Select your package or `@habityzer` scope
+   - **Permissions**: Select **Read and write**
+   - ✅ **Enable "Bypass 2FA"** for automated workflows
+4. Click **Generate Token**
+5. Copy the token (starts with `npm_...`)
+
+> **Note**: Granular tokens for publishing expire after a maximum of 90 days. Set a reminder to regenerate the token before expiration, or consider using [OIDC trusted publishing](https://docs.npmjs.com/generating-provenance-statements) for a more secure, token-free approach.
 
 ### 2. Add NPM Token to GitHub
 
@@ -91,9 +106,12 @@ This runs semantic-release locally. Make sure you have:
 - Semantic-release only publishes if there are releasable commits
 - View the GitHub Actions logs for details
 
-### "Permission denied"
-- Ensure your NPM token has **Automation** or **Publish** permissions
+### "Permission denied" or "Invalid npm token"
+- Ensure you're using a **granular access token** (not classic token)
+- Check that the token has **Read and write** permissions
+- Ensure **"Bypass 2FA"** is enabled for CI/CD workflows
 - Check that your npm account has publish access to the `@habityzer` scope
+- Verify the token hasn't expired (granular tokens expire after max 90 days)
 
 ### "Package already published"
 - Semantic-release automatically handles versions
@@ -108,7 +126,9 @@ This runs semantic-release locally. Make sure you have:
 
 ## Additional Resources
 
+- [npm Granular Access Tokens Documentation](https://docs.npmjs.com/about-access-tokens#granular-access-tokens)
+- [GitHub Blog: npm Classic Tokens Revoked (Dec 2025)](https://github.blog/changelog/2025-12-09-npm-classic-tokens-revoked-session-based-auth-and-cli-token-management-now-available/)
 - [Semantic Release Documentation](https://semantic-release.gitbook.io/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
-- [NPM Token Types](https://docs.npmjs.com/about-access-tokens)
+- [OIDC Trusted Publishing for npm](https://docs.npmjs.com/generating-provenance-statements)
 
