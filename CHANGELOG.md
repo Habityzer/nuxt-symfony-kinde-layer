@@ -1,3 +1,11 @@
+## [2.1.4](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.3...v2.1.4) (2026-01-01)
+
+
+### Bug Fixes
+
+* Add Nuxt prepare step to CI and correct ESLint config import path ([07471f5](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/07471f5234e1322a2ccfe5709cb8109badededda))
+* Remove invalid pnpm-workspace.yaml for single package ([7e7d6a1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/7e7d6a19ffd2edccfee80b944c947c364b6b2863))
+
 ## [2.1.3](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.2...v2.1.3) (2026-01-01)
 
 
