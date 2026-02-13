@@ -12,13 +12,14 @@
  * @see .cursorrules for proxy best practices
  */
 
-// Auth constants (defined inline to avoid import issues during Nitro bundling)
-const E2E_TOKEN_COOKIE_NAME = 'kinde_token'
-const APP_TOKEN_PREFIX = 'app_'
-const KINDE_ID_TOKEN_COOKIE_NAME = 'id_token'
-
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
+  const kindeConfig = config.public.kindeAuth || {}
+  const middlewareConfig = kindeConfig.middleware || {}
+  const cookieConfig = kindeConfig.cookie || {}
+  const appTokenPrefix = requireString(middlewareConfig.appTokenPrefix, 'kindeAuth.middleware.appTokenPrefix')
+  const e2eTokenCookieName = requireString(middlewareConfig.e2eTokenCookieName, 'kindeAuth.middleware.e2eTokenCookieName')
+  const idTokenBaseName = requireString(cookieConfig.idTokenName, 'kindeAuth.cookie.idTokenName')
 
   // Get the path (remove /api/symfony prefix)
   let path
@@ -50,8 +51,11 @@ export default defineEventHandler(async (event) => {
   } else {
     // Check for E2E test token first (from cookie)
     // Only use E2E token if it's a valid app token (starts with APP_TOKEN_PREFIX)
-    const e2eToken = getCookie(event, E2E_TOKEN_COOKIE_NAME)
-    if (e2eToken && e2eToken.startsWith(APP_TOKEN_PREFIX)) {
+    // Prefer scoped cookie name to avoid collisions between projects on localhost.
+    const cookiePrefix = requireString(cookieConfig.prefix, 'kindeAuth.cookie.prefix')
+    const scopedE2eCookieName = `${cookiePrefix}${e2eTokenCookieName}`
+    const e2eToken = getCookie(event, scopedE2eCookieName)
+    if (e2eToken && e2eToken.startsWith(appTokenPrefix)) {
       token = e2eToken
     } else {
       // Use Kinde authentication from the module
@@ -79,7 +83,7 @@ export default defineEventHandler(async (event) => {
         // If access token is not available, try id_token as fallback
         if (!accessToken || accessToken.trim() === '') {
           const idToken = (await sessionManager.getSessionItem(
-            KINDE_ID_TOKEN_COOKIE_NAME
+            idTokenBaseName
           )) as string | undefined
 
           if (idToken) {
@@ -220,3 +224,11 @@ export default defineEventHandler(async (event) => {
     })
   }
 })
+
+function requireString(value: unknown, key: string): string {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value
+  }
+
+  throw new Error(`[SYMFONY PROXY] Missing required config: ${key}`)
+}

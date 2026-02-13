@@ -1,6 +1,8 @@
 import { computed, ref, readonly } from 'vue'
 import { E2E_TOKEN_COOKIE_NAME } from '../constants/auth'
 
+const LEGACY_E2E_STORAGE_KEY = 'e2e_app_token'
+
 interface SymfonyUser {
   id: number
   email: string
@@ -105,9 +107,30 @@ export const useAuth = () => {
     // Clear local Symfony state
     userProfile.value = null
 
-    // Clear E2E test token if exists
+    // Clear auth cookies first so route middleware blocks protected pages immediately.
     if (import.meta.client) {
-      localStorage.removeItem('e2e_app_token')
+      const config = useRuntimeConfig()
+      const kindeConfig = config.public.kindeAuth || {}
+      const cookieConfig = kindeConfig.cookie || {}
+      const middlewareConfig = kindeConfig.middleware || {}
+      const cookiePrefix = requireString(cookieConfig.prefix, 'kindeAuth.cookie.prefix')
+      const idTokenName = requireString(cookieConfig.idTokenName, 'kindeAuth.cookie.idTokenName')
+      const accessTokenName = requireString(cookieConfig.accessTokenName, 'kindeAuth.cookie.accessTokenName')
+      const refreshTokenName = requireString(cookieConfig.refreshTokenName, 'kindeAuth.cookie.refreshTokenName')
+      const e2eTokenCookieName = requireString(middlewareConfig.e2eTokenCookieName, 'kindeAuth.middleware.e2eTokenCookieName')
+
+      const authCookies = [idTokenName, accessTokenName, refreshTokenName]
+      const scopedE2eCookieName = `${cookiePrefix}${e2eTokenCookieName}`
+      const scopedE2eStorageKey = `${cookiePrefix}e2e_app_token`
+
+      authCookies.forEach((cookieName) => {
+        document.cookie = `${cookiePrefix}${cookieName}=; path=/; max-age=0`
+      })
+
+      // Remove both scoped and legacy keys for backward compatibility.
+      localStorage.removeItem(scopedE2eStorageKey)
+      localStorage.removeItem(LEGACY_E2E_STORAGE_KEY)
+      document.cookie = `${scopedE2eCookieName}=; path=/; max-age=0`
       document.cookie = `${E2E_TOKEN_COOKIE_NAME}=; path=/; max-age=0`
     }
 
@@ -136,4 +159,12 @@ export const useAuth = () => {
     logout,
     fetchUserProfile
   }
+}
+
+function requireString(value: unknown, key: string): string {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value
+  }
+
+  throw new Error(`[useAuth] Missing required config: ${key}`)
 }
