@@ -1,17 +1,26 @@
 // https://nuxt.com/docs/guide/going-further/layers
+import {
+  APP_TOKEN_PREFIX,
+  CLOCK_SKEW_SECONDS,
+  DEFAULT_LOGIN_PATH,
+  E2E_TOKEN_COOKIE_NAME,
+  KINDE_ACCESS_TOKEN_COOKIE_NAME,
+  KINDE_ID_TOKEN_COOKIE_NAME,
+  KINDE_REFRESH_TOKEN_COOKIE_NAME
+} from './shared/auth-constants'
+
 const AUTH_COOKIE_PREFIX = process.env.NUXT_PUBLIC_AUTH_COOKIE_PREFIX
-const AUTH_LOGIN_PATH = process.env.NUXT_PUBLIC_AUTH_LOGIN_PATH
+const AUTH_LOGIN_PATH = process.env.NUXT_PUBLIC_AUTH_LOGIN_PATH || DEFAULT_LOGIN_PATH
 const AUTH_CLOCK_SKEW_SECONDS = process.env.NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS
   ? Number(process.env.NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS)
-  : undefined
-const AUTH_APP_TOKEN_PREFIX = process.env.NUXT_PUBLIC_AUTH_APP_TOKEN_PREFIX
-const AUTH_E2E_TOKEN_COOKIE_NAME = process.env.NUXT_PUBLIC_AUTH_E2E_TOKEN_COOKIE_NAME
-const AUTH_ID_TOKEN_NAME = process.env.NUXT_PUBLIC_AUTH_ID_TOKEN_NAME
-const AUTH_ACCESS_TOKEN_NAME = process.env.NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME
-const AUTH_REFRESH_TOKEN_NAME = process.env.NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME
+  : CLOCK_SKEW_SECONDS
+const AUTH_APP_TOKEN_PREFIX = process.env.NUXT_PUBLIC_AUTH_APP_TOKEN_PREFIX || APP_TOKEN_PREFIX
+const AUTH_E2E_TOKEN_COOKIE_NAME = process.env.NUXT_PUBLIC_AUTH_E2E_TOKEN_COOKIE_NAME || E2E_TOKEN_COOKIE_NAME
+const AUTH_ID_TOKEN_NAME = process.env.NUXT_PUBLIC_AUTH_ID_TOKEN_NAME || KINDE_ID_TOKEN_COOKIE_NAME
+const AUTH_ACCESS_TOKEN_NAME = process.env.NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME || KINDE_ACCESS_TOKEN_COOKIE_NAME
+const AUTH_REFRESH_TOKEN_NAME = process.env.NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME || KINDE_REFRESH_TOKEN_COOKIE_NAME
 
 export default defineNuxtConfig({
-
   // Pre-configure shared modules that all projects will use
   modules: [
     '@nuxt/eslint',
@@ -52,6 +61,40 @@ export default defineNuxtConfig({
     }
   },
   compatibilityDate: '2025-01-17',
+  hooks: {
+    ready(nuxt) {
+      const publicConfig = nuxt.options.runtimeConfig.public as Record<string, unknown>
+      const runtimeKindeAuth = (publicConfig.kindeAuth || {}) as Record<string, unknown>
+      const runtimeCookie = (runtimeKindeAuth.cookie || {}) as Record<string, unknown>
+      const runtimeMiddleware = (runtimeKindeAuth.middleware || {}) as Record<string, unknown>
+      const kindeModuleConfig = (nuxt.options.kindeAuth || {}) as Record<string, unknown>
+      const kindeModuleCookie = (kindeModuleConfig.cookie || {}) as Record<string, unknown>
+      const kindeModuleMiddleware = (kindeModuleConfig.middleware || {}) as Record<string, unknown>
+
+      // Keep layer reusable: if app defines values only in kindeAuth module config,
+      // mirror them into runtime config used by guards/composables.
+      if (!isNonEmptyString(runtimeCookie.prefix) && isNonEmptyString(kindeModuleCookie.prefix)) {
+        runtimeCookie.prefix = kindeModuleCookie.prefix
+      }
+      if (!Array.isArray(runtimeMiddleware.publicRoutes) && Array.isArray(kindeModuleMiddleware.publicRoutes)) {
+        runtimeMiddleware.publicRoutes = kindeModuleMiddleware.publicRoutes
+      }
+
+      runtimeKindeAuth.cookie = runtimeCookie
+      runtimeKindeAuth.middleware = runtimeMiddleware
+      publicConfig.kindeAuth = runtimeKindeAuth
+
+      assertRequiredString(runtimeCookie.prefix, 'runtimeConfig.public.kindeAuth.cookie.prefix')
+      // Optional values are defaulted in the layer; only validate final resolved values.
+      assertRequiredNumber(runtimeMiddleware.clockSkewSeconds, 'runtimeConfig.public.kindeAuth.middleware.clockSkewSeconds')
+      assertRequiredString(kindeModuleCookie.prefix, 'kindeAuth.cookie.prefix')
+      assertRequiredString(kindeModuleConfig.authDomain, 'kindeAuth.authDomain')
+      assertRequiredString(kindeModuleConfig.clientId, 'kindeAuth.clientId')
+      assertRequiredString(kindeModuleConfig.clientSecret, 'kindeAuth.clientSecret')
+      assertRequiredString(kindeModuleConfig.redirectURL, 'kindeAuth.redirectURL')
+      assertRequiredString(kindeModuleConfig.logoutRedirectURL, 'kindeAuth.logoutRedirectURL')
+    }
+  },
 
   // ESLint configuration
   eslint: {
@@ -86,45 +129,6 @@ export default defineNuxtConfig({
     },
     debug: {
       enabled: process.env.NODE_ENV !== 'production'
-    }
-  },
-  hooks: {
-    ready(nuxt) {
-      const publicConfig = nuxt.options.runtimeConfig.public as Record<string, unknown>
-      const runtimeKindeAuth = (publicConfig.kindeAuth || {}) as Record<string, unknown>
-      const runtimeCookie = (runtimeKindeAuth.cookie || {}) as Record<string, unknown>
-      const runtimeMiddleware = (runtimeKindeAuth.middleware || {}) as Record<string, unknown>
-      const kindeModuleConfig = (nuxt.options.kindeAuth || {}) as Record<string, unknown>
-      const kindeModuleCookie = (kindeModuleConfig.cookie || {}) as Record<string, unknown>
-      const kindeModuleMiddleware = (kindeModuleConfig.middleware || {}) as Record<string, unknown>
-
-      // Keep layer reusable: if app defines values only in kindeAuth module config,
-      // mirror them into runtime config used by guards/composables.
-      if (!isNonEmptyString(runtimeCookie.prefix) && isNonEmptyString(kindeModuleCookie.prefix)) {
-        runtimeCookie.prefix = kindeModuleCookie.prefix
-      }
-      if (!Array.isArray(runtimeMiddleware.publicRoutes) && Array.isArray(kindeModuleMiddleware.publicRoutes)) {
-        runtimeMiddleware.publicRoutes = kindeModuleMiddleware.publicRoutes
-      }
-
-      runtimeKindeAuth.cookie = runtimeCookie
-      runtimeKindeAuth.middleware = runtimeMiddleware
-      publicConfig.kindeAuth = runtimeKindeAuth
-
-      assertRequiredString(runtimeCookie.prefix, 'runtimeConfig.public.kindeAuth.cookie.prefix')
-      assertRequiredString(runtimeCookie.idTokenName, 'runtimeConfig.public.kindeAuth.cookie.idTokenName')
-      assertRequiredString(runtimeCookie.accessTokenName, 'runtimeConfig.public.kindeAuth.cookie.accessTokenName')
-      assertRequiredString(runtimeCookie.refreshTokenName, 'runtimeConfig.public.kindeAuth.cookie.refreshTokenName')
-      assertRequiredString(runtimeMiddleware.loginPath, 'runtimeConfig.public.kindeAuth.middleware.loginPath')
-      assertRequiredString(runtimeMiddleware.appTokenPrefix, 'runtimeConfig.public.kindeAuth.middleware.appTokenPrefix')
-      assertRequiredString(runtimeMiddleware.e2eTokenCookieName, 'runtimeConfig.public.kindeAuth.middleware.e2eTokenCookieName')
-      assertRequiredNumber(runtimeMiddleware.clockSkewSeconds, 'runtimeConfig.public.kindeAuth.middleware.clockSkewSeconds')
-      assertRequiredString(kindeModuleCookie.prefix, 'kindeAuth.cookie.prefix')
-      assertRequiredString(kindeModuleConfig.authDomain, 'kindeAuth.authDomain')
-      assertRequiredString(kindeModuleConfig.clientId, 'kindeAuth.clientId')
-      assertRequiredString(kindeModuleConfig.clientSecret, 'kindeAuth.clientSecret')
-      assertRequiredString(kindeModuleConfig.redirectURL, 'kindeAuth.redirectURL')
-      assertRequiredString(kindeModuleConfig.logoutRedirectURL, 'kindeAuth.logoutRedirectURL')
     }
   },
 

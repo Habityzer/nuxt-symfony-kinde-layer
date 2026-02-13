@@ -257,6 +257,54 @@ Add these scripts to your project's `package.json`:
 }
 ```
 
+## Development
+
+### Local Development Setup
+
+1. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+2. **The project uses Husky for git hooks:**
+   - Pre-commit: Automatically runs `pnpm lint` before each commit
+   - Commit-msg: Validates commit message format (conventional commits)
+
+3. **Run linter manually:**
+   ```bash
+   pnpm lint        # Check for issues
+   pnpm lint:fix    # Auto-fix issues
+   ```
+
+4. **First time setup:**
+   The pre-commit hook will automatically run `nuxt prepare` if needed (with placeholder environment variables).
+
+### Commit Message Format
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/). Your commits must follow this format:
+
+```
+type(scope): subject
+
+body (optional)
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+**Examples:**
+```bash
+git commit -m "feat: add authentication middleware"
+git commit -m "fix: resolve cookie prefix conflict"
+git commit -m "docs: update README with CI setup"
+```
+
 ## CI/CD Setup
 
 ### Required Environment Variables for GitHub Actions

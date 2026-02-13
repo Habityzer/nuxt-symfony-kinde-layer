@@ -9,7 +9,9 @@
     "build": "nuxt build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "release": " HUSKY=0 semantic-release"
+    "prepare": "husky || true",
+    "prepare:ci": "pnpm install && KINDE_AUTH_DOMAIN=https://placeholder.kinde.com KINDE_CLIENT_ID=placeholder KINDE_CLIENT_SECRET=placeholder KINDE_REDIRECT_URL=http://localhost:3000/api/auth/callback KINDE_LOGOUT_REDIRECT_URL=http://localhost:3000 NUXT_PUBLIC_AUTH_COOKIE_PREFIX=auth_ NUXT_PUBLIC_AUTH_LOGIN_PATH=/login NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS=300 NUXT_PUBLIC_AUTH_APP_TOKEN_PREFIX=Bearer NUXT_PUBLIC_AUTH_E2E_TOKEN_COOKIE_NAME=e2e_token NUXT_PUBLIC_AUTH_ID_TOKEN_NAME=id_token NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME=access_token NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME=refresh_token pnpm nuxt prepare",
+    "release": "HUSKY=0 semantic-release"
   },
   "keywords": [
     "nuxt",
@@ -45,7 +47,8 @@
     "openapi-typescript": "^7.10.0",
     "typescript": "^5.9.3",
     "eslint": "^9.37.0",
-    "semantic-release": "^24.2.9"
+    "semantic-release": "^24.2.9",
+    "husky": "^9.0.0"
   },
   "peerDependencies": {
     "nuxt": "^3.0.0 || ^4.0.0"

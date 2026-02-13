@@ -1,9 +1,3 @@
-import {
-  E2E_TOKEN_COOKIE_NAME,
-  KINDE_ACCESS_TOKEN_COOKIE_NAME,
-  KINDE_ID_TOKEN_COOKIE_NAME
-} from '../utils/auth-constants'
-
 export default defineEventHandler((event) => {
   if (!isHtmlNavigationRequest(event)) {
     return

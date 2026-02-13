@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Pre-commit hook to ensure code quality
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Check if .nuxt directory exists, if not, prepare it
+if [ ! -d ".nuxt" ]; then
+  echo "📦 Preparing Nuxt (first time)..."
+  export KINDE_AUTH_DOMAIN="https://placeholder.kinde.com"
+  export KINDE_CLIENT_ID="placeholder_client_id"
+  export KINDE_CLIENT_SECRET="placeholder_client_secret"
+  export KINDE_REDIRECT_URL="http://localhost:3000/api/auth/callback"
+  export KINDE_LOGOUT_REDIRECT_URL="http://localhost:3000"
+  export NUXT_PUBLIC_AUTH_COOKIE_PREFIX="auth_"
+  export NUXT_PUBLIC_AUTH_LOGIN_PATH="/login"
+  export NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS="300"
+  export NUXT_PUBLIC_AUTH_APP_TOKEN_PREFIX="Bearer"
+  export NUXT_PUBLIC_AUTH_E2E_TOKEN_COOKIE_NAME="e2e_token"
+  export NUXT_PUBLIC_AUTH_ID_TOKEN_NAME="id_token"
+  export NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME="access_token"
+  export NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME="refresh_token"
+  
+  pnpm nuxt prepare > /dev/null 2>&1
+fi
+
+# Run linter
+echo "✨ Running ESLint..."
+pnpm lint
+
+echo "✅ Pre-commit checks passed!"
