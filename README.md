@@ -257,6 +257,35 @@ Add these scripts to your project's `package.json`:
 }
 ```
 
+## CI/CD Setup
+
+### Required Environment Variables for GitHub Actions
+
+When building or publishing this layer in CI/CD (e.g., GitHub Actions), you need to provide placeholder environment variables for the `nuxt prepare` step. The layer's `nuxt.config.ts` validates these at build time.
+
+Add these to your workflow:
+
+```yaml
+- name: Prepare Nuxt
+  env:
+    KINDE_AUTH_DOMAIN: https://placeholder.kinde.com
+    KINDE_CLIENT_ID: placeholder_client_id
+    KINDE_CLIENT_SECRET: placeholder_client_secret
+    KINDE_REDIRECT_URL: http://localhost:3000/api/auth/callback
+    KINDE_LOGOUT_REDIRECT_URL: http://localhost:3000
+    NUXT_PUBLIC_AUTH_COOKIE_PREFIX: auth_
+    NUXT_PUBLIC_AUTH_LOGIN_PATH: /login
+    NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS: 300
+    NUXT_PUBLIC_AUTH_APP_TOKEN_PREFIX: Bearer
+    NUXT_PUBLIC_AUTH_E2E_TOKEN_COOKIE_NAME: e2e_token
+    NUXT_PUBLIC_AUTH_ID_TOKEN_NAME: id_token
+    NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME: access_token
+    NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME: refresh_token
+  run: pnpm nuxt prepare
+```
+
+**Note**: These are placeholder values only used for type generation and validation. Projects consuming this layer will provide their own real credentials at runtime.
+
 ## Troubleshooting
 
 ### Cookie Name Conflicts
