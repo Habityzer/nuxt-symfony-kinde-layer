@@ -47,13 +47,13 @@ export default defineNuxtConfig({
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
       
-      // IMPORTANT: Expose auth config for middleware (must match kindeAuth below)
+      // Optional: Override layer defaults for auth config
       kindeAuth: {
         cookie: {
-          prefix: 'myapp_' // Must match prefix in kindeAuth
+          prefix: 'myapp_' // Override default cookie prefix
         },
         middleware: {
-          publicRoutes: ['/', '/blog', '/help']
+          publicRoutes: ['/', '/blog', '/help'] // Override default public routes
         }
       }
     }
@@ -61,17 +61,17 @@ export default defineNuxtConfig({
 
   // Configure Kinde authentication module
   kindeAuth: {
-    authDomain: process.env.NUXT_KINDE_AUTH_DOMAIN,
-    clientId: process.env.NUXT_KINDE_CLIENT_ID,
-    clientSecret: process.env.NUXT_KINDE_CLIENT_SECRET,
-    redirectURL: process.env.NUXT_KINDE_REDIRECT_URL,
-    logoutRedirectURL: process.env.NUXT_KINDE_LOGOUT_REDIRECT_URL,
+    authDomain: process.env.KINDE_AUTH_DOMAIN,
+    clientId: process.env.KINDE_CLIENT_ID,
+    clientSecret: process.env.KINDE_CLIENT_SECRET,
+    redirectURL: process.env.KINDE_REDIRECT_URL,
+    logoutRedirectURL: process.env.KINDE_LOGOUT_REDIRECT_URL,
     postLoginRedirectURL: '/dashboard',
     cookie: {
-      prefix: 'myapp_' // IMPORTANT: Must be unique per project to avoid cookie conflicts
+      prefix: 'myapp_' // IMPORTANT: Must match runtimeConfig.public.kindeAuth.cookie.prefix
     },
     middleware: {
-      publicRoutes: ['/', '/blog', '/help'] // Must match publicRoutes in runtimeConfig.public
+      publicRoutes: ['/', '/blog', '/help'] // Must match runtimeConfig.public
     }
   }
 })
@@ -79,20 +79,31 @@ export default defineNuxtConfig({
 
 ### 2. Environment Variables
 
-Create a `.env` file:
+Create a `.env` file in your project:
 
 ```bash
 # Symfony Backend
 API_BASE_URL=http://localhost:8000
 
-# Kinde Authentication
-NUXT_KINDE_AUTH_DOMAIN=https://your-domain.kinde.com
-NUXT_KINDE_CLIENT_ID=your-client-id
-NUXT_KINDE_CLIENT_SECRET=your-client-secret
-NUXT_KINDE_REDIRECT_URL=http://localhost:3000/api/kinde/callback
-NUXT_KINDE_LOGOUT_REDIRECT_URL=http://localhost:3000
-NUXT_KINDE_POST_LOGIN_REDIRECT_URL=/dashboard
+# Kinde Authentication (required by @habityzer/nuxt-kinde-auth module)
+KINDE_AUTH_DOMAIN=https://your-domain.kinde.com
+KINDE_CLIENT_ID=your-client-id
+KINDE_CLIENT_SECRET=your-client-secret
+KINDE_REDIRECT_URL=http://localhost:3000/api/kinde/callback
+KINDE_LOGOUT_REDIRECT_URL=http://localhost:3000
+
+# Layer Configuration (optional - layer provides defaults)
+NUXT_PUBLIC_AUTH_COOKIE_PREFIX=myapp_
+NUXT_PUBLIC_AUTH_LOGIN_PATH=/api/kinde/login
+NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS=300
+NUXT_PUBLIC_AUTH_APP_TOKEN_PREFIX=Bearer
+NUXT_PUBLIC_AUTH_E2E_TOKEN_COOKIE_NAME=kinde_token
+NUXT_PUBLIC_AUTH_ID_TOKEN_NAME=id_token
+NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME=access_token
+NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME=refresh_token
 ```
+
+**Note:** The layer provides sensible defaults for all `NUXT_PUBLIC_AUTH_*` variables. You only need to override them if you want different values. The `KINDE_*` variables are required.
 
 ### 3. Use the Auth Composable
 
@@ -158,9 +169,12 @@ const response = await getUsersApi()
 ### Files
 
 - `server/api/symfony/[...].ts` - Symfony API proxy with auth
+- `server/middleware/auth-guard.ts` - Server-side authentication middleware
+- `server/utils/auth-constants.ts` - Re-exports shared auth constants for server
 - `app/composables/useAuth.ts` - Authentication composable
-- `app/constants/auth.ts` - Auth constants
-- `app/middleware/auth.global.ts` - Global route protection
+- `app/plugins/auth-guard.client.ts` - Client-side authentication guard
+- `app/constants/auth.ts` - Re-exports shared auth constants for app
+- `shared/auth-constants.ts` - Core authentication constants (source of truth)
 
 ## Configuration Options
 
@@ -266,15 +280,18 @@ Add these scripts to your project's `package.json`:
    pnpm install
    ```
 
-2. **The project uses Husky for git hooks:**
+2. **Available scripts:**
+   ```bash
+   pnpm dev          # Run dev server with example env
+   pnpm build        # Build the layer
+   pnpm lint         # Check for linting issues
+   pnpm lint:fix     # Auto-fix linting issues
+   pnpm release      # Create semantic release (CI only)
+   ```
+
+3. **Git hooks (via Husky):**
    - Pre-commit: Automatically runs `pnpm lint` before each commit
    - Commit-msg: Validates commit message format (conventional commits)
-
-3. **Run linter manually:**
-   ```bash
-   pnpm lint        # Check for issues
-   pnpm lint:fix    # Auto-fix issues
-   ```
 
 4. **First time setup:**
    The pre-commit hook will automatically run `nuxt prepare` if needed (with placeholder environment variables).
@@ -354,16 +371,34 @@ If you get type mismatches between expected Hydra collections and plain arrays, 
 
 ## Architecture & Design Decisions
 
-### Why Constants Are Defined Inline in Server Code
+### Shared Constants Architecture
 
-You'll notice that auth constants (`E2E_TOKEN_COOKIE_NAME`, `APP_TOKEN_PREFIX`, `KINDE_ID_TOKEN_COOKIE_NAME`) are defined directly in the server files (`server/api/symfony/[...].ts`) rather than imported from a shared constants file.
+The layer uses a centralized constants file at `shared/auth-constants.ts` as the single source of truth for authentication configuration values (cookie names, token prefixes, etc.).
 
-**Reason**: Nitro's bundling process for server-side code doesn't support:
-- App aliases like `~` or `@` (these resolve to the consuming project's app directory, not the layer's)
-- Relative imports from external layers during the rollup bundling phase
-- The `#build` alias for accessing layer exports
+**Structure:**
+- `shared/auth-constants.ts` - Core constants definitions
+- `app/constants/auth.ts` - Re-exports for client-side code (supports `~/constants/auth` imports)
+- `server/utils/auth-constants.ts` - Re-exports for server-side code (supports `#imports` and relative imports)
 
-**Solution**: We define these constants inline in server files while maintaining the shared `app/constants/auth.ts` for client-side code. This is a deliberate architectural choice to ensure reliable builds across all consuming projects.
+**Why this structure:**
+- Single source of truth prevents drift between client and server values
+- Re-export pattern works around Nuxt/Nitro bundling constraints
+- Maintains clean import paths for consuming projects
+
+### Runtime Configuration
+
+The layer uses Nuxt's `runtimeConfig` to make authentication settings available to both server middleware and client code:
+
+**Implementation:**
+1. Constants are imported in `nuxt.config.ts` from `shared/auth-constants.ts`
+2. Environment variables override defaults (e.g., `NUXT_PUBLIC_AUTH_COOKIE_PREFIX`)
+3. Values are merged into `runtimeConfig.public.kindeAuth` for runtime access
+4. Both server middleware and client plugins read from runtime config
+
+This approach allows:
+- Projects to override defaults via environment variables
+- Type-safe access to configuration throughout the app
+- Consistent behavior between development and production
 
 ### Cookie Prefix Configuration
 
