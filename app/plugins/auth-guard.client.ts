@@ -1,10 +1,11 @@
+import type { KindeAuthRuntimeConfig } from '../../types/kinde-auth'
+
 export default defineNuxtPlugin(() => {
   const router = useRouter()
   const config = useRuntimeConfig()
-  const kindeConfig = config.public.kindeAuth || {}
+  const kindeConfig = (config.public.kindeAuth || {}) as KindeAuthRuntimeConfig
   const middlewareConfig = kindeConfig.middleware || {}
   const cookieConfig = kindeConfig.cookie || {}
-  // @ts-expect-error - cookie property exists in runtime config but not in module types
   const cookiePrefix = requireString(cookieConfig.prefix, 'kindeAuth.cookie.prefix')
   const idTokenBaseName = requireString(cookieConfig.idTokenName, 'kindeAuth.cookie.idTokenName')
   const accessTokenBaseName = requireString(cookieConfig.accessTokenName, 'kindeAuth.cookie.accessTokenName')

@@ -1,4 +1,5 @@
 import { computed, ref, readonly } from 'vue'
+import type { KindeAuthRuntimeConfig } from '../../types/kinde-auth'
 import { E2E_TOKEN_COOKIE_NAME } from '../constants/auth'
 
 const LEGACY_E2E_STORAGE_KEY = 'e2e_app_token'
@@ -110,7 +111,7 @@ export const useAuth = () => {
     // Clear auth cookies first so route middleware blocks protected pages immediately.
     if (import.meta.client) {
       const config = useRuntimeConfig()
-      const kindeConfig = config.public.kindeAuth || {}
+      const kindeConfig = (config.public.kindeAuth || {}) as KindeAuthRuntimeConfig
       const cookieConfig = kindeConfig.cookie || {}
       const middlewareConfig = kindeConfig.middleware || {}
       const cookiePrefix = requireString(cookieConfig.prefix, 'kindeAuth.cookie.prefix')

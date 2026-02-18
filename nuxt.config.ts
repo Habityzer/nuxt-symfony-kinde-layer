@@ -25,7 +25,6 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
-    '@nuxt/image',
     '@habityzer/nuxt-kinde-auth',
     '@pinia/nuxt'
   ],
@@ -136,15 +135,31 @@ export default defineNuxtConfig({
   pinia: {}
 })
 
+// Mapping of runtime config keys to their environment variable names
+const CONFIG_TO_ENV_MAP: Record<string, string> = {
+  'runtimeConfig.public.kindeAuth.cookie.prefix': 'NUXT_PUBLIC_AUTH_COOKIE_PREFIX',
+  'runtimeConfig.public.kindeAuth.middleware.clockSkewSeconds': 'NUXT_PUBLIC_AUTH_CLOCK_SKEW_SECONDS',
+  'kindeAuth.cookie.prefix': 'NUXT_PUBLIC_AUTH_COOKIE_PREFIX',
+  'kindeAuth.authDomain': 'KINDE_AUTH_DOMAIN',
+  'kindeAuth.clientId': 'KINDE_CLIENT_ID',
+  'kindeAuth.clientSecret': 'KINDE_CLIENT_SECRET',
+  'kindeAuth.redirectURL': 'KINDE_REDIRECT_URL',
+  'kindeAuth.logoutRedirectURL': 'KINDE_LOGOUT_REDIRECT_URL'
+}
+
 function assertRequiredString(value: unknown, key: string) {
   if (typeof value !== 'string' || value.trim().length === 0) {
-    throw new Error(`[nuxt-symfony-kinde-layer] Missing required config: ${key}`)
+    const envVar = CONFIG_TO_ENV_MAP[key]
+    const envVarHint = envVar ? `\n\n  \x1b[1m\x1b[33m→ Set the environment variable:\x1b[0m \x1b[1m\x1b[36m${envVar}\x1b[0m\n  \x1b[90mAdd it to your .env file (see .env.example for reference)\x1b[0m` : ''
+    throw new Error(`[nuxt-symfony-kinde-layer] \x1b[1m\x1b[31mMissing required config:\x1b[0m ${key}${envVarHint}`)
   }
 }
 
 function assertRequiredNumber(value: unknown, key: string) {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
-    throw new Error(`[nuxt-symfony-kinde-layer] Missing or invalid required numeric config: ${key}`)
+    const envVar = CONFIG_TO_ENV_MAP[key]
+    const envVarHint = envVar ? `\n\n  \x1b[1m\x1b[33m→ Set the environment variable:\x1b[0m \x1b[1m\x1b[36m${envVar}\x1b[0m\n  \x1b[90mAdd it to your .env file (see .env.example for reference)\x1b[0m` : ''
+    throw new Error(`[nuxt-symfony-kinde-layer] \x1b[1m\x1b[31mMissing or invalid required numeric config:\x1b[0m ${key}${envVarHint}`)
   }
 }
 

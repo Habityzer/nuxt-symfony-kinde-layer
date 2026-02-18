@@ -12,9 +12,11 @@
  * @see .cursorrules for proxy best practices
  */
 
+import type { KindeAuthRuntimeConfig } from '../../../types/kinde-auth'
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const kindeConfig = config.public.kindeAuth || {}
+  const kindeConfig = (config.public.kindeAuth || {}) as KindeAuthRuntimeConfig
   const middlewareConfig = kindeConfig.middleware || {}
   const cookieConfig = kindeConfig.cookie || {}
   const appTokenPrefix = requireString(middlewareConfig.appTokenPrefix, 'kindeAuth.middleware.appTokenPrefix')
@@ -32,7 +34,7 @@ export default defineEventHandler(async (event) => {
 
   // Check if this is a public API route (no auth required)
   const publicApiRoutes
-    = config.public.kindeAuth?.middleware?.publicApiRoutes || []
+    = (config.public.kindeAuth as KindeAuthRuntimeConfig | undefined)?.middleware?.publicApiRoutes || []
   const isPublicRoute = publicApiRoutes.some((route: string) => {
     if (route.endsWith('/**')) {
       const prefix = route.slice(0, -3)
@@ -124,13 +126,13 @@ export default defineEventHandler(async (event) => {
     // Get Content-Type to determine how to handle body
     const contentType = getHeader(event, 'content-type') || ''
 
-    let body: string | undefined
+    let body: string | Buffer | undefined
 
     // Handle multipart/form-data specially (preserve binary data and MIME types)
     if (contentType.includes('multipart/form-data')) {
       // For multipart/form-data, read the raw body without parsing
       // This preserves the boundary and binary data including MIME types
-      body = await readRawBody(event, false)
+      body = await readRawBody(event, false) as string | Buffer | undefined
     } else if (method !== 'GET' && method !== 'HEAD') {
       // For other content types (JSON, etc.), read and parse the body
       body = await readBody(event)
