@@ -1,3 +1,11 @@
+## [2.2.2](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.2.1...v2.2.2) (2026-02-18)
+
+
+### Bug Fixes
+
+* Enhance Kinde authentication configuration and type safety ([ee59fc4](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/ee59fc4d97832f9effcedb613c9c57773cee3d80))
+* Update pnpm lockfile to use published @habityzer/nuxt-kinde-auth package ([39e9f2c](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/39e9f2c19ffa5f731cef610bd219dc3f4ba90bf5))
+
 ## [2.2.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.2.0...v2.2.1) (2026-02-13)
 
 # [2.2.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.1.4...v2.2.0) (2026-02-13)
