@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.2.2...v2.3.0) (2026-02-21)
+
+
+### Features
+
+* Enhance Kinde authentication middleware configuration ([f04dc26](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/f04dc268b1ae0b4bfb096839bbc3673403fc7199))
+
 ## [2.2.2](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.2.1...v2.2.2) (2026-02-18)
 
 
