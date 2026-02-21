@@ -12,17 +12,21 @@ export default defineEventHandler((event) => {
   const kindeConfig = config.public.kindeAuth || {}
   const middlewareConfig = kindeConfig.middleware || {}
   const cookieConfig = kindeConfig.cookie || {}
+  const mode = middlewareConfig.mode || 'privateByDefault'
   const publicRoutes: string[] = middlewareConfig.publicRoutes || ['/']
+  const protectedRoutes: string[] = middlewareConfig.protectedRoutes || []
   const loginPath = requireString(middlewareConfig.loginPath, 'kindeAuth.middleware.loginPath')
   const appTokenPrefix = requireString(middlewareConfig.appTokenPrefix, 'kindeAuth.middleware.appTokenPrefix')
   const e2eTokenCookieName = requireString(middlewareConfig.e2eTokenCookieName, 'kindeAuth.middleware.e2eTokenCookieName')
   const clockSkewSeconds = requireNonNegativeNumber(middlewareConfig.clockSkewSeconds, 'kindeAuth.middleware.clockSkewSeconds')
   const idTokenBaseName = requireString(cookieConfig.idTokenName, 'kindeAuth.cookie.idTokenName')
   const accessTokenBaseName = requireString(cookieConfig.accessTokenName, 'kindeAuth.cookie.accessTokenName')
-  const isPublicRoute = publicRoutes.some(route => path === route || path.startsWith(`${route}/`))
+  const requiresAuth = mode === 'publicByDefault'
+    ? protectedRoutes.some(route => path === route || path.startsWith(`${route}/`))
+    : !publicRoutes.some(route => path === route || path.startsWith(`${route}/`))
 
-  logServer('route-check', { path, isPublicRoute })
-  if (isPublicRoute) {
+  logServer('route-check', { path, mode, requiresAuth })
+  if (!requiresAuth) {
     return
   }
 

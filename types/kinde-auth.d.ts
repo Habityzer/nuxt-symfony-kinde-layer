@@ -13,7 +13,10 @@ declare module '@habityzer/nuxt-kinde-auth' {
     middleware?: {
       enabled?: boolean
       global?: boolean
+      /** 'privateByDefault' = protect all except publicRoutes; 'publicByDefault' = protect only protectedRoutes */
+      mode?: 'privateByDefault' | 'publicByDefault'
       publicRoutes?: string[]
+      protectedRoutes?: string[]
       publicApiRoutes?: string[]
       e2eTokenCookieName?: string
       appTokenPrefix?: string
@@ -37,7 +40,9 @@ export interface KindeAuthRuntimeConfig {
   middleware?: {
     enabled?: boolean
     global?: boolean
+    mode?: 'privateByDefault' | 'publicByDefault'
     publicRoutes?: string[]
+    protectedRoutes?: string[]
     publicApiRoutes?: string[]
     e2eTokenCookieName?: string
     appTokenPrefix?: string

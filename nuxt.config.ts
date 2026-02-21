@@ -50,7 +50,9 @@ export default defineNuxtConfig({
           refreshTokenName: AUTH_REFRESH_TOKEN_NAME
         },
         middleware: {
-          publicRoutes: [], // Default, projects override this
+          mode: 'privateByDefault' as const,
+          publicRoutes: [],
+          protectedRoutes: [],
           loginPath: AUTH_LOGIN_PATH,
           clockSkewSeconds: AUTH_CLOCK_SKEW_SECONDS,
           appTokenPrefix: AUTH_APP_TOKEN_PREFIX,
@@ -77,6 +79,12 @@ export default defineNuxtConfig({
       }
       if (!Array.isArray(runtimeMiddleware.publicRoutes) && Array.isArray(kindeModuleMiddleware.publicRoutes)) {
         runtimeMiddleware.publicRoutes = kindeModuleMiddleware.publicRoutes
+      }
+      if (Array.isArray(kindeModuleMiddleware.protectedRoutes)) {
+        runtimeMiddleware.protectedRoutes = kindeModuleMiddleware.protectedRoutes
+      }
+      if (kindeModuleMiddleware.mode === 'publicByDefault' || kindeModuleMiddleware.mode === 'privateByDefault') {
+        runtimeMiddleware.mode = kindeModuleMiddleware.mode
       }
 
       runtimeKindeAuth.cookie = runtimeCookie
@@ -124,7 +132,9 @@ export default defineNuxtConfig({
     middleware: {
       enabled: false, // Disabled - using custom middleware from layer
       global: false,
-      publicRoutes: [] // Projects can override
+      mode: 'privateByDefault',
+      publicRoutes: [],
+      protectedRoutes: [] // Projects can override
     },
     debug: {
       enabled: process.env.NODE_ENV !== 'production'

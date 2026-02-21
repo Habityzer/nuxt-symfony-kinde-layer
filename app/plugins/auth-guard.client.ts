@@ -15,7 +15,9 @@ export default defineNuxtPlugin(() => {
   const idToken = useCookie<string | null>(`${cookiePrefix}${idTokenBaseName}`)
   const accessToken = useCookie<string | null>(`${cookiePrefix}${accessTokenBaseName}`)
   const e2eToken = useCookie<string | null>(`${cookiePrefix}${e2eTokenCookieName}`)
+  const mode = middlewareConfig.mode || 'privateByDefault'
   const publicRoutes: string[] = middlewareConfig.publicRoutes || ['/']
+  const protectedRoutes: string[] = middlewareConfig.protectedRoutes || []
   const loginPath = requireString(middlewareConfig.loginPath, 'kindeAuth.middleware.loginPath')
 
   router.beforeEach((to) => {
@@ -23,9 +25,11 @@ export default defineNuxtPlugin(() => {
       return true
     }
 
-    const isPublicRoute = publicRoutes.some(route => to.path === route || to.path.startsWith(`${route}/`))
-    logClient('route-check', { path: to.path, isPublicRoute })
-    if (isPublicRoute) {
+    const requiresAuth = mode === 'publicByDefault'
+      ? protectedRoutes.some(route => to.path === route || to.path.startsWith(`${route}/`))
+      : !publicRoutes.some(route => to.path === route || to.path.startsWith(`${route}/`))
+    logClient('route-check', { path: to.path, mode, requiresAuth })
+    if (!requiresAuth) {
       return true
     }
 
