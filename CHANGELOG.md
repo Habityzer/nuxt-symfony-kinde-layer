@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.3.0...v2.4.0) (2026-03-16)
+
+
+### Features
+
+* Add support from native login ([5c40492](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/5c4049205c7376c41d76ba14aeaf0d0362c5937e))
+
 # [2.3.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.2.2...v2.3.0) (2026-02-21)
 
 
