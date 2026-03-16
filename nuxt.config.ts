@@ -97,7 +97,7 @@ export default defineNuxtConfig({
       assertRequiredString(kindeModuleCookie.prefix, 'kindeAuth.cookie.prefix')
       assertRequiredString(kindeModuleConfig.authDomain, 'kindeAuth.authDomain')
       assertRequiredString(kindeModuleConfig.clientId, 'kindeAuth.clientId')
-      assertRequiredString(kindeModuleConfig.clientSecret, 'kindeAuth.clientSecret')
+      // clientSecret is optional for Frontend/PKCE apps
       assertRequiredString(kindeModuleConfig.redirectURL, 'kindeAuth.redirectURL')
       assertRequiredString(kindeModuleConfig.logoutRedirectURL, 'kindeAuth.logoutRedirectURL')
     }
