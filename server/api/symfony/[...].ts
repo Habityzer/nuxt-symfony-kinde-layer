@@ -47,7 +47,9 @@ export default defineEventHandler(async (event) => {
 
   // Skip authentication for public routes
   if (isPublicRoute) {
-    console.log('🔓 [SYMFONY PROXY] Public route, skipping auth:', path)
+    if (!process.env.E2E_TEST_MODE) {
+      console.log('[SYMFONY PROXY]', event.method, path, '(public)')
+    }
     // Set token to empty to skip auth headers
     token = ''
   } else {
@@ -162,19 +164,10 @@ export default defineEventHandler(async (event) => {
       headers['Accept'] = accept
     }
 
-    // Log the request to backend
-    const backendUrl = `${config.apiBaseUrl}${path}`
-    console.log('🔵 [SYMFONY PROXY] Request to backend:', {
-      url: backendUrl,
-      method,
-      headers: {
-        ...headers,
-        Authorization: token && token !== '' ? `Bearer kinde_${token.substring(0, 10)}...` : 'none'
-      },
-      query,
-      hasBody: !!body,
-      isMultipart: contentType.includes('multipart/form-data')
-    })
+    // Log one short line per request (method + path only); skip in e2e to reduce output
+    if (!process.env.E2E_TEST_MODE) {
+      console.log('[SYMFONY PROXY]', method, path)
+    }
 
     // Forward request to Symfony with Kinde token
     const response = await $fetch(path, {
@@ -185,12 +178,6 @@ export default defineEventHandler(async (event) => {
       query,
       retry: false, // Disable automatic retries
       timeout: 30000 // 30 second timeout
-    })
-
-    console.log('✅ [SYMFONY PROXY] Backend response received:', {
-      url: backendUrl,
-      method,
-      status: 'success'
     })
 
     return response

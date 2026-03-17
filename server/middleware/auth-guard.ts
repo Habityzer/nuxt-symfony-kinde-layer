@@ -127,6 +127,10 @@ function logServer(event: string, details: Record<string, unknown>) {
   if (process.env.NODE_ENV === 'production') {
     return
   }
+  // Only log when explicitly enabled (reduces noise in e2e and dev)
+  if (!process.env.NUXT_AUTH_GUARD_DEBUG) {
+    return
+  }
 
   console.warn(`[AUTH GUARD SERVER] ${event}`, details)
 }
