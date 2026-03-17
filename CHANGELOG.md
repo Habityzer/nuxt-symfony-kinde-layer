@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.0...v2.4.1) (2026-03-17)
+
+
+### Bug Fixes
+
+* Improve logging in Symfony proxy and auth guard middleware ([4613f74](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/4613f74fc9d9d6a4ed796675367176d46f1e0a7e))
+
 # [2.4.0](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.3.0...v2.4.0) (2026-03-16)
 
 
