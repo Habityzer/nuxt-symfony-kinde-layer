@@ -90,8 +90,9 @@ export const useAuth = () => {
       userProfile.value = response
       return response
     } catch (error) {
-      // Silently handle auth errors on public pages
-      if (error && typeof error === 'object' && 'statusCode' in error && error.statusCode === 401) {
+      // Silently handle auth errors on public pages (support both status and statusCode for Nuxt 4.4+ / 5)
+      const err = error as { status?: number, statusCode?: number } | undefined
+      if (err && typeof err === 'object' && (err.status === 401 || err.statusCode === 401)) {
         console.debug('Auth check failed - user not logged in')
       } else {
         console.error('Failed to fetch user profile:', error)

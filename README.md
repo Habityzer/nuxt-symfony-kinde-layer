@@ -224,6 +224,22 @@ kindeAuth: {
 }
 ```
 
+### Disabling layer modules
+
+You can disable individual modules provided by the layer by setting them to `false` in your project's `nuxt.config.ts`. The layer is still used via `extends`; only the module is disabled. For example, if you do not use `@nuxt/image`:
+
+```typescript
+export default defineNuxtConfig({
+  extends: ['@habityzer/nuxt-symfony-kinde-layer'],
+  image: false,
+  // ...
+})
+```
+
+### Route groups (optional)
+
+As an alternative to listing only public routes, you can use Nuxt route groups (e.g. `(protected)/dashboard`) and check `to.meta.groups` in middleware. For example, put protected pages under `pages/(protected)/` and in a custom middleware use `if (to.meta.groups?.includes('protected') && !isAuthenticated()) return navigateTo('/login')`. The layer's auth guard uses `publicRoutes` / `protectedRoutes` by default; route groups are optional for projects that prefer convention-based protection.
+
 ## E2E Testing
 
 The layer supports E2E testing with app tokens:
@@ -352,6 +368,10 @@ Add these to your workflow:
 **Note**: These are placeholder values only used for type generation and validation. Projects consuming this layer will provide their own real credentials at runtime.
 
 ## Troubleshooting
+
+### Error handling and Nuxt 5 readiness
+
+The layer uses Nuxt 4.4+ / Nuxt 5 style errors: `createError({ status, statusText })` instead of the deprecated `statusCode`/`statusMessage`. When handling errors from the proxy or auth composable, prefer reading `error.status` and `error.statusText`. The deprecated `statusCode` and `statusMessage` remain supported on `NuxtError` for backward compatibility during migration.
 
 ### Cookie Name Conflicts
 

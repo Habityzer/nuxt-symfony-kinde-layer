@@ -67,8 +67,8 @@ export default defineEventHandler(async (event) => {
 
       if (!kinde?.client || !kinde?.sessionManager) {
         throw createError({
-          statusCode: 500,
-          statusMessage:
+          status: 500,
+          statusText:
             'Kinde authentication not initialized. Module may not be loaded correctly.'
         })
       }
@@ -99,15 +99,15 @@ export default defineEventHandler(async (event) => {
 
         if (!token || token.trim() === '') {
           throw createError({
-            statusCode: 401,
-            statusMessage: 'Unauthorized - Please log in'
+            status: 401,
+            statusText: 'Unauthorized - Please log in'
           })
         }
       } catch (error) {
         console.error('❌ [SYMFONY PROXY] Auth error:', error)
         throw createError({
-          statusCode: 401,
-          statusMessage:
+          status: 401,
+          statusText:
             error instanceof Error ? error.message : 'Authentication failed'
         })
       }
@@ -116,8 +116,8 @@ export default defineEventHandler(async (event) => {
 
   if (!token && !isPublicRoute) {
     throw createError({
-      statusCode: 401,
-      statusMessage: 'No authentication token available'
+      status: 401,
+      statusText: 'No authentication token available'
     })
   }
 
@@ -182,33 +182,28 @@ export default defineEventHandler(async (event) => {
 
     return response
   } catch (error) {
-    console.error('❌ [SYMFONY PROXY] Symfony API error:', {
-      path,
-      statusCode:
-        error && typeof error === 'object' && 'statusCode' in error
-          ? error.statusCode
-          : 'unknown',
-      message: error instanceof Error ? error.message : 'unknown'
-    })
-    // Handle Symfony API errors
-    const statusCode
-      = error && typeof error === 'object' && 'statusCode' in error
-        ? (error.statusCode as number)
+    const err = error as Record<string, unknown> | undefined
+    const status
+      = err && typeof err === 'object' && ('status' in err || 'statusCode' in err)
+        ? (err.status as number) ?? (err.statusCode as number)
         : 500
-    const statusMessage
-      = error && typeof error === 'object' && 'statusMessage' in error
-        ? (error.statusMessage as string)
+    const statusText
+      = err && typeof err === 'object' && ('statusText' in err || 'statusMessage' in err)
+        ? (err.statusText as string) ?? (err.statusMessage as string)
         : error instanceof Error
           ? error.message
           : 'Symfony API error'
+    console.error('❌ [SYMFONY PROXY] Symfony API error:', {
+      path,
+      status,
+      message: statusText
+    })
     const data
-      = error && typeof error === 'object' && 'data' in error
-        ? error.data
-        : undefined
+      = err && typeof err === 'object' && 'data' in err ? err.data : undefined
 
     throw createError({
-      statusCode,
-      statusMessage,
+      status,
+      statusText,
       data
     })
   }
