@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.1...v2.4.2) (2026-03-19)
+
+
+### Bug Fixes
+
+* Remove unused @nuxt/image dependency ([631f4f6](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/631f4f601e8dbb5753d06adc5471f7a54632a636))
+
 ## [2.4.1](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.0...v2.4.1) (2026-03-17)
 
 
