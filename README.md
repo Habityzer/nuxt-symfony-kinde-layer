@@ -302,8 +302,8 @@ Add these scripts to your project's `package.json`:
    pnpm build        # Build the layer
    pnpm lint         # Check for linting issues
    pnpm lint:fix     # Auto-fix linting issues
-   pnpm release      # Create semantic release (CI only)
    ```
+   Versioning and npm publish run in GitHub Actions on push to `main` or `master` (see `.github/workflows/publish.yml`).
 
 3. **Git hooks (via Husky):**
    - Pre-commit: Automatically runs `pnpm lint` before each commit

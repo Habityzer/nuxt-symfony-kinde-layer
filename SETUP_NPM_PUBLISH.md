@@ -1,6 +1,6 @@
 # Setting Up Automated NPM Publishing
 
-This project uses GitHub Actions with semantic-release to automatically publish to npm when you push to the `master` branch.
+This project uses GitHub Actions with [semantic-release-action](https://github.com/cycjimmy/semantic-release-action) to automatically publish to npm when you push to `main` or `master`.
 
 ## Setup Instructions
 
@@ -50,7 +50,7 @@ When setting up your package on npmjs.com for automated publishing:
 
 The workflow (`.github/workflows/publish.yml`) will:
 
-1. **Trigger**: Automatically runs when you push to the `master` branch
+1. **Trigger**: Automatically runs when you push to `main` or `master`
 2. **Analyze**: Semantic-release reads your commit messages (following conventional commits)
 3. **Version**: Automatically bumps the version based on your commits:
    - `feat:` → minor version (1.0.0 → 1.1.0)
@@ -82,18 +82,9 @@ git commit -m "docs: update README"
 git commit -m "chore: update dependencies"
 ```
 
-### 6. Manual Release (Optional)
+### 6. Manual release
 
-If you prefer to release manually:
-
-```bash
-pnpm release
-```
-
-This runs semantic-release locally. Make sure you have:
-- `NPM_TOKEN` environment variable set
-- Committed all your changes
-- Pushed to the master branch
+Releases are executed in CI only (no `semantic-release` in this repo’s devDependencies). Push conventional commits to `main` or `master` and let the workflow publish. For a local dry-run you can use `npx semantic-release@25 --dry-run` from a throwaway clone with the same plugins installed, or rely on the workflow’s logs.
 
 ## Troubleshooting
 
@@ -119,7 +110,7 @@ This runs semantic-release locally. Make sure you have:
 
 ## Current Configuration
 
-- **Branch**: `master` (configured in `.releaserc.json`)
+- **Branches**: `main`, `master` (configured in `.releaserc.json`)
 - **Package**: `@habityzer/nuxt-symfony-kinde-layer`
 - **Workflow**: `.github/workflows/publish.yml`
 - **NPM Publish**: Enabled (set in `.releaserc.json`)

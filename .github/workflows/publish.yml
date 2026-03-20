@@ -56,11 +56,25 @@ jobs:
       
       - name: Run linter
         run: pnpm lint
-      
+
+      - name: Configure git for semantic-release push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
       - name: Release
+        uses: cycjimmy/semantic-release-action@v6
+        with:
+          semantic_version: 25
+          extra_plugins: |
+            @semantic-release/commit-analyzer@^13.0.1
+            @semantic-release/release-notes-generator@^14.1.0
+            @semantic-release/changelog@^6.0.3
+            @semantic-release/npm@^13.0.0
+            @semantic-release/git@^10.0.1
+            conventional-changelog-conventionalcommits@^9.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm release
 
