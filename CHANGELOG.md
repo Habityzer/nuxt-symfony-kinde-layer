@@ -1,3 +1,11 @@
+## [2.4.6](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.5...v2.4.6) (2026-03-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @vueuse/core to v14 ([dbf151d](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/dbf151d2a25a54247798c3fe1dd55cf3ff49064c))
+* **deps:** update dependency vue-router to v5 ([d648e54](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/d648e54c6398002ba76715153a57d0cfad75fe88))
+
 ## [2.4.5](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.4...v2.4.5) (2026-03-20)
 
 ## [2.4.4](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.3...v2.4.4) (2026-03-20)
