@@ -5,9 +5,30 @@ set -e
 
 echo "🔍 Running pre-commit checks..."
 
-# Check if .nuxt directory exists, if not, prepare it
-if [ ! -d ".nuxt" ]; then
-  echo "📦 Preparing Nuxt (first time)..."
+# Regenerate .nuxt when missing or when generated ESLint paths are stale (e.g. after pnpm install / ESLint major bump)
+needs_nuxt_prepare() {
+  [ ! -d ".nuxt" ] && return 0
+  [ ! -f ".nuxt/eslint.config.mjs" ] && return 0
+  while IFS= read -r line; do
+    imp=$(echo "$line" | sed -n "s/.*from ['\"]\\([^'\"]*\\)['\"].*/\\1/p")
+    [ -z "$imp" ] && continue
+    case "$imp" in
+      ../node_modules/*)
+        # Paths in .nuxt/eslint.config.mjs are relative to .nuxt/, not the repo root
+        target="${imp#../}"
+        if [ ! -f "$target" ]; then
+          return 0
+        fi
+        ;;
+    esac
+  done <<EOF
+$(grep -E "from ['\"].*node_modules/" .nuxt/eslint.config.mjs 2>/dev/null || true)
+EOF
+  return 1
+}
+
+if needs_nuxt_prepare; then
+  echo "📦 Preparing Nuxt (.nuxt missing or stale)..."
   export KINDE_AUTH_DOMAIN="https://placeholder.kinde.com"
   export KINDE_CLIENT_ID="placeholder_client_id"
   export KINDE_CLIENT_SECRET="placeholder_client_secret"
@@ -21,7 +42,7 @@ if [ ! -d ".nuxt" ]; then
   export NUXT_PUBLIC_AUTH_ID_TOKEN_NAME="id_token"
   export NUXT_PUBLIC_AUTH_ACCESS_TOKEN_NAME="access_token"
   export NUXT_PUBLIC_AUTH_REFRESH_TOKEN_NAME="refresh_token"
-  
+
   pnpm nuxt prepare > /dev/null 2>&1
 fi
 
