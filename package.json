@@ -21,6 +21,10 @@
   ],
   "author": "Habityzer",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Habityzer/nuxt-symfony-kinde-layer.git"
+  },
   "dependencies": {
     "@habityzer/nuxt-kinde-auth": "^1.2.2",
     "@nuxt/eslint": "^1.9.0",
