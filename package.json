@@ -43,7 +43,7 @@
     "eslint": "^10.0.0",
     "husky": "^9.0.0",
     "openapi-typescript": "^7.10.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.0"
   },
   "peerDependencies": {
     "nuxt": "^3.0.0 || ^4.0.0"
