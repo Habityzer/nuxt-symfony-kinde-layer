@@ -1,3 +1,5 @@
+## [2.4.13](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.12...v2.4.13) (2026-03-25)
+
 ## [2.4.12](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.11...v2.4.12) (2026-03-25)
 
 ## [2.4.11](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.10...v2.4.11) (2026-03-21)
