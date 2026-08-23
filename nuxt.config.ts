@@ -57,6 +57,12 @@ export default defineNuxtConfig({
           clockSkewSeconds: AUTH_CLOCK_SKEW_SECONDS,
           appTokenPrefix: AUTH_APP_TOKEN_PREFIX,
           e2eTokenCookieName: AUTH_E2E_TOKEN_COOKIE_NAME
+        },
+        proxy: {
+          // Idempotent operations key on this header; dropping it would turn a
+          // safe retry into a second, separately charged request.
+          forwardHeaders: ['Idempotency-Key'],
+          timeout: 30000
         }
       } as Record<string, unknown>
     }
