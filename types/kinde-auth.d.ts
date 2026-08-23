@@ -23,6 +23,20 @@ declare module '@habityzer/nuxt-kinde-auth' {
       clockSkewSeconds?: number
       loginPath?: string
     }
+    proxy?: {
+      /**
+       * Extra request headers the `/api/symfony/**` proxy forwards upstream, on
+       * top of Authorization, Content-Type and Accept.
+       *
+       * Matched case-insensitively and sent to the backend with the spelling
+       * given here. Defaults to `['Idempotency-Key']`: a paid or otherwise
+       * non-repeatable operation is keyed by that header, and dropping it makes
+       * a retry indistinguishable from a new request.
+       */
+      forwardHeaders?: string[]
+      /** Upstream request timeout in ms. Defaults to 30000. */
+      timeout?: number
+    }
     debug?: {
       enabled?: boolean
     }
@@ -48,6 +62,12 @@ export interface KindeAuthRuntimeConfig {
     appTokenPrefix?: string
     clockSkewSeconds?: number
     loginPath?: string
+  }
+  proxy?: {
+    /** Extra request headers forwarded upstream. Defaults to `['Idempotency-Key']`. */
+    forwardHeaders?: string[]
+    /** Upstream request timeout in ms. Defaults to 30000. */
+    timeout?: number
   }
   debug?: {
     enabled?: boolean

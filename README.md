@@ -54,6 +54,14 @@ export default defineNuxtConfig({
         },
         middleware: {
           publicRoutes: ['/', '/blog', '/help'] // Override default public routes
+        },
+        proxy: {
+          // Extra request headers the /api/symfony/** proxy forwards upstream,
+          // on top of Authorization, Content-Type and Accept. Defaults to
+          // ['Idempotency-Key']; setting this REPLACES the default, so include
+          // it unless you mean to drop it.
+          forwardHeaders: ['Idempotency-Key', 'X-Request-Id'],
+          timeout: 45000 // Upstream request timeout in ms (default 30000)
         }
       }
     }

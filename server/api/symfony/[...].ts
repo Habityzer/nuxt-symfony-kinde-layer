@@ -7,7 +7,12 @@
  * - Forwards Kinde authentication tokens
  * - Supports E2E testing with app tokens
  * - Properly forwards Accept and Content-Type headers for API negotiation
+ * - Forwards `kindeAuth.proxy.forwardHeaders` (default: Idempotency-Key)
  * - Handles query parameters
+ *
+ * Headers are an allow-list, never a pass-through. The proxy speaks to the
+ * backend with the caller's authority, so relaying arbitrary client headers
+ * would let a browser set values the backend trusts because the proxy sent them.
  *
  * @see .cursorrules for proxy best practices
  */
@@ -22,6 +27,17 @@ export default defineEventHandler(async (event) => {
   const appTokenPrefix = requireString(middlewareConfig.appTokenPrefix, 'kindeAuth.middleware.appTokenPrefix')
   const e2eTokenCookieName = requireString(middlewareConfig.e2eTokenCookieName, 'kindeAuth.middleware.e2eTokenCookieName')
   const idTokenBaseName = requireString(cookieConfig.idTokenName, 'kindeAuth.cookie.idTokenName')
+
+  const proxyConfig = kindeConfig.proxy || {}
+  // Idempotency-Key is forwarded by default rather than opt-in: a consumer that
+  // sends one is telling the backend "this is the same request as before", and
+  // silently dropping it turns a safe retry into a second charged operation.
+  const forwardHeaders = Array.isArray(proxyConfig.forwardHeaders)
+    ? proxyConfig.forwardHeaders
+    : ['Idempotency-Key']
+  const proxyTimeout = typeof proxyConfig.timeout === 'number' && proxyConfig.timeout > 0
+    ? proxyConfig.timeout
+    : 30000
 
   // Get the path (remove /api/symfony prefix)
   let path
@@ -164,6 +180,17 @@ export default defineEventHandler(async (event) => {
       headers['Accept'] = accept
     }
 
+    // Forward the configured extra headers (CRITICAL for idempotent operations).
+    // This allow-list is deliberately narrow: the proxy must never relay whatever
+    // a caller happens to send, or a browser-supplied Cookie or X-Forwarded-For
+    // would reach the backend as if the proxy had vouched for it.
+    for (const name of forwardHeaders) {
+      const value = getHeader(event, name.toLowerCase())
+      if (value) {
+        headers[name] = value
+      }
+    }
+
     // Log one short line per request (method + path only); skip in e2e to reduce output
     if (!process.env.E2E_TEST_MODE) {
       console.log('[SYMFONY PROXY]', method, path)
@@ -177,7 +204,7 @@ export default defineEventHandler(async (event) => {
       body,
       query,
       retry: false, // Disable automatic retries
-      timeout: 30000 // 30 second timeout
+      timeout: proxyTimeout
     })
 
     return response
