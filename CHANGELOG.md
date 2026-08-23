@@ -1,3 +1,10 @@
+## [2.4.14](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.13...v2.4.14) (2026-08-23)
+
+
+### Bug Fixes
+
+* **proxy:** forward Idempotency-Key and allow a configurable timeout ([0c478ae](https://github.com/Habityzer/nuxt-symfony-kinde-layer/commit/0c478ae0a2d4dc69ee9a5e4ea820949fcaafed9f))
+
 ## [2.4.13](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.12...v2.4.13) (2026-03-25)
 
 ## [2.4.12](https://github.com/Habityzer/nuxt-symfony-kinde-layer/compare/v2.4.11...v2.4.12) (2026-03-25)
